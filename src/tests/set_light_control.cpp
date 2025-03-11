@@ -18,51 +18,35 @@ void SetLightControl::Run() {
   // #       define NV097_SET_LIGHT_CONTROL_V_ALPHA_OPAQUE             0
   // #       define  (1 << 17)
 
-  {
-    auto token = StartTracking();
-    fprintf(log_stream_,
-            "\n> Set NV097_SET_LIGHT_CONTROL_V_SEPARATE_SPECULAR 0x%X\n",
-            NV097_SET_LIGHT_CONTROL_V_SEPARATE_SPECULAR);
-
+  char buf[64];
+  snprintf(buf, sizeof(buf), "NV097_SET_LIGHT_CONTROL_V_SEPARATE_SPECULAR 0x%X",
+           NV097_SET_LIGHT_CONTROL_V_SEPARATE_SPECULAR);
+  ApplyAndLog(buf, []() {
     auto p = pb_begin();
     p = pb_push1(p, NV097_SET_LIGHT_CONTROL,
                  NV097_SET_LIGHT_CONTROL_V_SEPARATE_SPECULAR);
     pb_end(p);
-    PBKitBusyWait();
+  });
+  reset();
 
-    StopTracking(token);
-    reset();
-  }
-
-  {
-    auto token = StartTracking();
-    fprintf(log_stream_, "\n> Set NV097_SET_LIGHT_CONTROL_V_LOCALEYE 0x%X\n",
-            NV097_SET_LIGHT_CONTROL_V_LOCALEYE);
-
+  snprintf(buf, sizeof(buf), "NV097_SET_LIGHT_CONTROL_V_LOCALEYE 0x%X",
+           NV097_SET_LIGHT_CONTROL_V_LOCALEYE);
+  ApplyAndLog(buf, []() {
     auto p = pb_begin();
     p = pb_push1(p, NV097_SET_LIGHT_CONTROL,
                  NV097_SET_LIGHT_CONTROL_V_LOCALEYE);
     pb_end(p);
-    PBKitBusyWait();
+  });
+  reset();
 
-    StopTracking(token);
-    reset();
-  }
-
-  {
-    auto token = StartTracking();
-    fprintf(
-        log_stream_,
-        "\n> Set NV097_SET_LIGHT_CONTROL_V_ALPHA_FROM_MATERIAL_SPECULAR 0x%X\n",
-        NV097_SET_LIGHT_CONTROL_V_ALPHA_FROM_MATERIAL_SPECULAR);
-
+  snprintf(buf, sizeof(buf),
+           "NV097_SET_LIGHT_CONTROL_V_ALPHA_FROM_MATERIAL_SPECULAR 0x%X",
+           NV097_SET_LIGHT_CONTROL_V_ALPHA_FROM_MATERIAL_SPECULAR);
+  ApplyAndLog(buf, []() {
     auto p = pb_begin();
     p = pb_push1(p, NV097_SET_LIGHT_CONTROL,
                  NV097_SET_LIGHT_CONTROL_V_ALPHA_FROM_MATERIAL_SPECULAR);
     pb_end(p);
-    PBKitBusyWait();
-
-    StopTracking(token);
-    reset();
-  }
+  });
+  reset();
 }

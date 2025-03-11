@@ -75,6 +75,7 @@ int main() {
   debugPrint("Results written to %s\n\nRebooting in 4 seconds...\n",
              kOutputDirectoryPath);
   pb_show_debug_screen();
+  PrintMsg("Tests completed, sleeping and rebooting\n");
   Sleep(4000);
 
   XReboot();

@@ -2,6 +2,7 @@
 #define TESTCASE_H
 
 #include <cstdio>
+#include <functional>
 #include <string>
 
 #include "pgraph_diff_token.h"
@@ -18,6 +19,8 @@ struct TestCase {
   static void PBKitBusyWait();
 
 protected:
+  void ApplyAndLog(const std::string &name, std::function<void()> apply_func,
+                   size_t iterations = 3) const;
   PGRAPHDiffToken StartTracking() const;
   void StopTracking(const PGRAPHDiffToken &token) const;
 
