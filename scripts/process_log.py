@@ -20,13 +20,29 @@ ITERATION_RE = re.compile(r"!\s+ITERATION\s+(\d+)")
 REGISTER_DIFF_RE = re.compile(HEX_CAPTURE + r":\s+" + HEX_CAPTURE + r"\s+=>\s+" + HEX_CAPTURE)
 
 
+# These addresses always seem to be updated to match the value being set, regardless
+# of the command.
+SKIPLIST = {
+    "0xFD400708",
+    "0xFD40070C",
+    "0xFD400748",
+    "0xFD400768",
+    "0xFD40076C",
+    "0xFD401708",
+    "0xFD40170C",
+    "0xFD401748",
+    "0xFD401768",
+    "0xFD40176C",
+}
+
+
 def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tuple[set[str], dict[str, str]]:
     logger.debug(value_applied)
 
     # Values that do not change across iterations.
     unchanged_values: dict[int, tuple[int, int]] = {}
     # Values that are unstable across iterations and probably uninteresting.
-    changed_values: set[int] = set()
+    changed_values: set[int] = SKIPLIST.copy()
 
     for values in iterations.values():
         for value in values:
@@ -55,15 +71,15 @@ def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tu
 
         if int(new, 16) == int(value_applied, 16):
             exact_matches.add(register)
-            logger.debug("\t** %s: %s => %s", register, old, new)
+            logger.warning("\t** %s: %s => %s", register, old, new)
         else:
             consistent_changes[register] = new
-            logger.debug("\t%s: %s => %s", register, old, new)
+            logger.warning("\t%s: %s => %s", register, old, new)
 
     return exact_matches, consistent_changes
 
 
-def _process_test(test_name: str, subtests: dict[str, dict[int, list[str]]]):
+def _process_test(test_name: str, subtests: dict[str, dict[int, list[str]]]) -> tuple[set[str], set[str]]:
     print(test_name)
 
     possible_registers: dict[str, tuple[set[str], dict[str, str]]] = {}
@@ -77,13 +93,17 @@ def _process_test(test_name: str, subtests: dict[str, dict[int, list[str]]]):
 
     for test_values in values[1:]:
         exact_match_regs &= test_values[0]
-        consistent_change_regs &= set(test_values[1])
+        consistent_change_regs &= set(test_values[1]) | test_values[0]
+
+    exact_match_regs -= SKIPLIST
 
     for exact_match_reg in exact_match_regs:
         print(f"{exact_match_reg} == test value")
 
     for consistent_change_reg in consistent_change_regs:
-        print(f"{consistent_change_reg} == changed consistently with value")
+        print(f"{consistent_change_reg} changed consistently with value")
+
+    return exact_match_regs, consistent_change_regs
 
 
 def main(log_file: str):
@@ -122,8 +142,25 @@ def main(log_file: str):
 
             tests[current_test][current_subtest][current_iteration].append(line)
 
+    test_results: dict[str, tuple[set[str], set[str]]] = {}
+
     for test, subtests in tests.items():
-        _process_test(test, subtests)
+        test_results[test] = _process_test(test, subtests)
+
+    # Look for exact match results that are consistent across all tests and
+    # flag them for review.
+    if len(tests) > 1:
+        exact_matches = set()
+        for exact_match_regs, _consistent_change_regs in test_results.values():
+            if not exact_matches:
+                exact_matches = exact_match_regs
+            else:
+                exact_matches &= exact_match_regs
+
+        if exact_matches:
+            print("The following registers were set to the test value across multiple tests:")
+            for reg in exact_matches:
+                print(reg)
 
     return 0
 
