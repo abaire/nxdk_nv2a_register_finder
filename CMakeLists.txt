@@ -82,6 +82,8 @@ add_executable(
         src/pgraph_diff_token.h
         src/tests/set_light_control.cpp
         src/tests/set_light_control.h
+        src/tests/set_light_enable.cpp
+        src/tests/set_light_enable.h
         src/tests/test_case.cpp
         src/tests/test_case.h
 )

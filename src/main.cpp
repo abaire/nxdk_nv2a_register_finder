@@ -23,6 +23,7 @@
 #include "debug_output.h"
 #include "pgraph_diff_token.h"
 #include "tests/set_light_control.h"
+#include "tests/set_light_enable.h"
 
 #define MAX_FILE_PATH_SIZE 248
 #define MAX_FILENAME_SIZE 42
@@ -119,6 +120,11 @@ static void RunTests() {
   set_light_control.Initialize();
   set_light_control.Run();
   set_light_control.Cleanup();
+
+  auto set_light_enable = SetLightEnable(fp);
+  set_light_enable.Initialize();
+  set_light_enable.Run();
+  set_light_enable.Cleanup();
 
   if (fp) {
     fclose(fp);
