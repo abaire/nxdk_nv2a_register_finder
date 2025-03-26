@@ -35,6 +35,20 @@ SKIPLIST = {
     "0xFD40176C",
 }
 
+KNOWN_REGISTERS = {
+    "0xFD400FC0": "NV_PGRAPH_CSV1_A",
+    "0xFD400FBC": "NV_PGRAPH_CSV1_B",
+    "0xFD400FB8": "NV_PGRAPH_CSV0_C",
+    "0xFD400FB4": "NV_PGRAPH_CSV0_D",
+}
+
+
+def register_name(register: str) -> str:
+    name = KNOWN_REGISTERS.get(register)
+    if name:
+        return f" ({name})"
+    return ""
+
 
 def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tuple[set[str], dict[str, str]]:
     logger.debug(value_applied)
@@ -71,10 +85,10 @@ def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tu
 
         if int(new, 16) == int(value_applied, 16):
             exact_matches.add(register)
-            logger.warning("\t** %s: %s => %s", register, old, new)
+            logger.warning("\t** %s%s: %s => %s", register, register_name(register), old, new)
         else:
             consistent_changes[register] = new
-            logger.warning("\t%s: %s => %s", register, old, new)
+            logger.warning("\t%s%s: %s => %s", register, register_name(register), old, new)
 
     return exact_matches, consistent_changes
 
