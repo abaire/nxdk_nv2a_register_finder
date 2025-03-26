@@ -84,6 +84,8 @@ add_executable(
         src/tests/set_light_control.h
         src/tests/set_light_enable.cpp
         src/tests/set_light_enable.h
+        src/tests/set_specular_enable.cpp
+        src/tests/set_specular_enable.h
         src/tests/test_case.cpp
         src/tests/test_case.h
 )

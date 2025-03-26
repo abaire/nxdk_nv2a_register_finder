@@ -19,6 +19,7 @@
 
 #include <string>
 #include <vector>
+#include <tests/set_specular_enable.h>
 
 #include "debug_output.h"
 #include "pgraph_diff_token.h"
@@ -104,6 +105,14 @@ static bool EnsureDriveMounted(char drive_letter) {
   return nxMountDrive(drive_letter, device_path);
 }
 
+#define TEST(name) \
+  do { \
+    auto test = name(fp); \
+    test.Initialize(); \
+    test.Run(); \
+    test.Cleanup(); \
+  } while (0)
+
 static void RunTests() {
   std::string log_file =
       std::string(kOutputDirectoryPath) + "\\" + kLogFileName;
@@ -116,15 +125,9 @@ static void RunTests() {
     return;
   }
 
-  auto set_light_control = SetLightControl(fp);
-  set_light_control.Initialize();
-  set_light_control.Run();
-  set_light_control.Cleanup();
-
-  auto set_light_enable = SetLightEnable(fp);
-  set_light_enable.Initialize();
-  set_light_enable.Run();
-  set_light_enable.Cleanup();
+  TEST(SetLightControl);
+  TEST(SetLightEnable);
+  TEST(SetSpecularEnable);
 
   if (fp) {
     fclose(fp);
