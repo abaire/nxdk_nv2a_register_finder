@@ -50,13 +50,13 @@ def register_name(register: str) -> str:
     return ""
 
 
-def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tuple[set[str], dict[str, str]]:
+def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tuple[set[str], dict[str, int]]:
     logger.debug(value_applied)
 
     # Values that do not change across iterations.
-    unchanged_values: dict[int, tuple[int, int]] = {}
+    unchanged_values: dict[str, tuple[int, int]] = {}
     # Values that are unstable across iterations and probably uninteresting.
-    changed_values: set[int] = SKIPLIST.copy()
+    changed_values: set[str] = SKIPLIST.copy()
 
     for values in iterations.values():
         for value in values:
@@ -73,22 +73,22 @@ def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tu
                 continue
 
             if register not in unchanged_values:
-                unchanged_values[register] = original, new
+                unchanged_values[register] = int(original, 16), int(new, 16)
             else:
                 changed_values.add(register)
 
     exact_matches: set[str] = set()
-    consistent_changes: dict[str, str] = {}
+    consistent_changes: dict[str, int] = {}
 
     for register in sorted(unchanged_values):
         old, new = unchanged_values[register]
 
-        if int(new, 16) == int(value_applied, 16):
+        if new == int(value_applied, 16):
             exact_matches.add(register)
-            logger.warning("\t** %s%s: %s => %s", register, register_name(register), old, new)
+            logger.warning("\t** %s%s: %s => %s (%s)", register, register_name(register), old, new, bin(new))
         else:
             consistent_changes[register] = new
-            logger.warning("\t%s%s: %s => %s", register, register_name(register), old, new)
+            logger.warning("\t%s%s: %s => %s (%s)", register, register_name(register), old, new, bin(new))
 
     return exact_matches, consistent_changes
 
@@ -96,7 +96,7 @@ def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tu
 def _process_test(test_name: str, subtests: dict[str, dict[int, list[str]]]) -> tuple[set[str], set[str]]:
     print(test_name)
 
-    possible_registers: dict[str, tuple[set[str], dict[str, str]]] = {}
+    possible_registers: dict[str, tuple[set[str], dict[str, int]]] = {}
     for subtest, iterations in subtests.items():
         possible_registers[subtest] = _process_subtest(subtest, iterations)
 

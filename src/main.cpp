@@ -20,6 +20,7 @@
 #include <string>
 #include <vector>
 #include <tests/set_specular_enable.h>
+#include <tests/set_specular_params.h>
 
 #include "debug_output.h"
 #include "pgraph_diff_token.h"
@@ -128,6 +129,7 @@ static void RunTests() {
   TEST(SetLightControl);
   TEST(SetLightEnable);
   TEST(SetSpecularEnable);
+  TEST(SetSpecularParams);
 
   if (fp) {
     fclose(fp);
