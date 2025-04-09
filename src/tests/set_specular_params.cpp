@@ -7,37 +7,46 @@
 
 void SetSpecularParams::Run() {
 
-  auto reset = []() {
+  auto reset = [](int offset) {
     auto p = pb_begin();
-    p = pb_push1(p, NV097_SET_SPECULAR_PARAMS, 0);
+    p = pb_push1(p, NV097_SET_SPECULAR_PARAMS + offset, 0);
     pb_end(p);
     PBKitBusyWait();
   };
 
-  reset();
 
   char buf[64];
-  snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS 0x0EBAEBA0");
-  ApplyAndLog(buf, []() {
-    auto p = pb_begin();
-    p = pb_push1(p, NV097_SET_SPECULAR_PARAMS, 0x0EBAEBA0);
-    pb_end(p);
-  });
 
-  snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS 0x0");
-  ApplyAndLog(buf, []() {
-    auto p = pb_begin();
-    p = pb_push1(p, NV097_SET_SPECULAR_PARAMS, 0);
-    pb_end(p);
-  });
+  for (uint32_t i = 0; i < 6; ++i) {
+    fprintf(log_stream_, "BEGIN NV097_SET_SPECULAR_PARAMS_%d\n", i);
 
-  snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS 0xDEADBEEF");
-  ApplyAndLog(buf, []() {
-    auto p = pb_begin();
-    p = pb_push1(p, NV097_SET_SPECULAR_PARAMS, 0xDEADBEEF);
-    pb_end(p);
-  });
+    auto offset = 4 * i;
+    reset(offset);
 
+    snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS_%d 0x0EBAEBA0", i);
+    ApplyAndLog(buf, [offset]() {
+      auto p = pb_begin();
+      p = pb_push1(p, NV097_SET_SPECULAR_PARAMS + offset, 0x0EBAEBA0);
+      pb_end(p);
+    });
 
-  reset();
+    snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS_%d 0x0", i);
+    ApplyAndLog(buf, [offset]() {
+      auto p = pb_begin();
+      p = pb_push1f(p, NV097_SET_SPECULAR_PARAMS + offset, 0.1234f);
+      pb_end(p);
+    });
+
+    snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS_%d 0xDEADBEEF", i);
+    ApplyAndLog(buf, [offset]() {
+      auto p = pb_begin();
+      p = pb_push1(p, NV097_SET_SPECULAR_PARAMS + offset, 0xDEADBEEF);
+      pb_end(p);
+    });
+
+    reset(offset);
+
+    fprintf(log_stream_, "END NV097_SET_SPECULAR_PARAMS_%d\n", i);
+  }
+
 }

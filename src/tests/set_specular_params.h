@@ -9,6 +9,10 @@ struct SetSpecularParams : public TestCase {
       : TestCase("NV097_SET_SPECULAR_PARAMS", log_stream) {}
 
   void Run() override;
+
+  // Handled in Run
+  void Initialize() override {}
+  void Cleanup() override {}
 };
 
 #endif // SETSPECULARPARAMS_H
