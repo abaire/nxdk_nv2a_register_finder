@@ -80,6 +80,8 @@ add_executable(
         src/pbkit_ext.h
         src/pgraph_diff_token.cpp
         src/pgraph_diff_token.h
+        src/tests/set_infinite_half_vector.cpp
+        src/tests/set_infinite_half_vector.h
         src/tests/set_light_control.cpp
         src/tests/set_light_control.h
         src/tests/set_light_enable.cpp

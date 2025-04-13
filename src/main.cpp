@@ -19,13 +19,14 @@
 
 #include <string>
 #include <vector>
-#include <tests/set_specular_enable.h>
-#include <tests/set_specular_params.h>
 
 #include "debug_output.h"
 #include "pgraph_diff_token.h"
 #include "tests/set_light_control.h"
 #include "tests/set_light_enable.h"
+#include "tests/set_specular_enable.h"
+#include "tests/set_specular_params.h"
+#include "tests/set_infinite_half_vector.h"
 
 #define MAX_FILE_PATH_SIZE 248
 #define MAX_FILENAME_SIZE 42
@@ -43,7 +44,8 @@ static void RunTests();
 static bool EnsureDriveMounted(char drive_letter);
 static void EnsureFolderExists(const std::string &folder_path);
 
-extern "C" __cdecl int automount_d_drive(void);
+extern "C" __cdecl
+int automount_d_drive(void);
 
 /* Main program function */
 int main() {
@@ -130,6 +132,7 @@ static void RunTests() {
   TEST(SetLightEnable);
   TEST(SetSpecularEnable);
   TEST(SetSpecularParams);
+  TEST(SetInfiniteHalfVector);
 
   if (fp) {
     fclose(fp);

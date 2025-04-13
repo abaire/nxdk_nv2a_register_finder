@@ -80,10 +80,11 @@ def _process_subtest(value_applied: str, iterations: dict[int, list[str]]) -> tu
     exact_matches: set[str] = set()
     consistent_changes: dict[str, int] = {}
 
+    value_applied_int = int(value_applied, 16)
     for register in sorted(unchanged_values):
         old, new = unchanged_values[register]
 
-        if new == int(value_applied, 16):
+        if new == value_applied_int:
             exact_matches.add(register)
             logger.warning("\t** %s%s: %s => %s (%s)", register, register_name(register), old, new, bin(new))
         else:
@@ -102,11 +103,13 @@ def _process_test(test_name: str, subtests: dict[str, dict[int, list[str]]]) -> 
 
     values = list(possible_registers.values())
 
-    exact_match_regs = values[0][0]
+    exact_match_regs = set(values[0][0])
     consistent_change_regs = set(values[0][1])
 
     for test_values in values[1:]:
-        exact_match_regs &= test_values[0]
+        # Subsequent iterations should be stable, meaning that any exact matches in the first iteration should not show
+        # up again until a new value is set.
+        exact_match_regs -= test_values[0]
         consistent_change_regs &= set(test_values[1]) | test_values[0]
 
     exact_match_regs -= SKIPLIST

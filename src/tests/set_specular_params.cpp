@@ -30,10 +30,24 @@ void SetSpecularParams::Run() {
       pb_end(p);
     });
 
-    snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS_%d 0x0", i);
+    snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS_%d 0x3F800000", i);
     ApplyAndLog(buf, [offset]() {
       auto p = pb_begin();
-      p = pb_push1f(p, NV097_SET_SPECULAR_PARAMS + offset, 0.1234f);
+      p = pb_push1(p, NV097_SET_SPECULAR_PARAMS + offset, 0x3F800000);
+      pb_end(p);
+    });
+
+    snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS_%d 0xBF800000", i);
+    ApplyAndLog(buf, [offset]() {
+      auto p = pb_begin();
+      p = pb_push1(p, NV097_SET_SPECULAR_PARAMS + offset, 0xBF800000);
+      pb_end(p);
+    });
+
+    snprintf(buf, sizeof(buf), "NV097_SET_SPECULAR_PARAMS_%d 0xBBD9DFDB", i);
+    ApplyAndLog(buf, [offset]() {
+      auto p = pb_begin();
+      p = pb_push1(p, NV097_SET_SPECULAR_PARAMS + offset, 0XBBD9DFDB);
       pb_end(p);
     });
 

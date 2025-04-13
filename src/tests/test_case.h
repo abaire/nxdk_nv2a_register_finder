@@ -29,4 +29,26 @@ protected:
   FILE *log_stream_;
 };
 
+
+// Used to set light parameters for lights beyond 0.
+// Supported params:
+//    NV097_SET_LIGHT_AMBIENT_COLOR
+//    NV097_SET_LIGHT_DIFFUSE_COLOR
+//    NV097_SET_LIGHT_SPECULAR_COLOR
+//    NV097_SET_LIGHT_LOCAL_RANGE
+//    NV097_SET_LIGHT_INFINITE_HALF_VECTOR
+//    NV097_SET_LIGHT_INFINITE_DIRECTION
+//    NV097_SET_LIGHT_SPOT_FALLOFF
+//    NV097_SET_LIGHT_SPOT_DIRECTION
+//    NV097_SET_LIGHT_LOCAL_POSITION
+//    NV097_SET_LIGHT_LOCAL_ATTENUATION
+#define SET_LIGHT(i, param) ((param) + (i) * 128)
+
+// Used to set light parameters for back lights beyond 0.
+// Supported params:
+//    NV097_SET_BACK_LIGHT_AMBIENT_COLOR
+//    NV097_SET_BACK_LIGHT_DIFFUSE_COLOR
+//    NV097_SET_BACK_LIGHT_SPECULAR_COLOR
+#define SET_BACK_LIGHT(i, param) ((param) + (i) * 64)
+
 #endif // TESTCASE_H
